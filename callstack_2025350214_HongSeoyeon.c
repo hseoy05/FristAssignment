@@ -47,19 +47,21 @@ void prolog(char* func_name, int local_num){
 }
 
 void epillog(){
-    FP = pop(); //SFP에서 이전 함수의 FP값 불러오기기
-    int nul_val = pop(); //return adress 값 지우기기
+	while(SP!=FP){
+		pop();
+	}
+    FP = pop(); 
+    pop();
 }
 //-------------------------------------
 
-//-----------parameter save-------------------
+//-----------remove parameter-------------------
 void remove_parameter(int parameter_num){
 	for (int i=0;i<parameter_num;i++){
 		pop();
 	}
 }
 //-----------------------------
-
 
 
 void print_stack()
@@ -95,24 +97,22 @@ void func1(int arg1, int arg2, int arg3)
 {
     int var_1 = 100;
 
-    //prolog start
+    //prolog start--------------
     prolog("func1", 1);
         //local value 저장
     SP -= 1;
     push(100, "var_1");
-    //prolog end
+    //prolog end---------------
     print_stack();
 
-    //다음 호출될 함수의 매개변수 저장장
     push(13, "arg2");
     push(11, "arg1");
     func2(11, 13);
 
-    //epillog start
-    SP = FP;
+    //epillog start--------
     epillog();
     remove_parameter(2);
-    //epillog end
+    //epillog end--------
 
     print_stack();
 }
@@ -121,24 +121,23 @@ void func1(int arg1, int arg2, int arg3)
 void func2(int arg1, int arg2)
 {
     int var_2 = 200;
-    //prolog start
+    //prolog start---------
     prolog("func2", 1);
-        //local value 저장
+        //save local value
     SP -= 1;
     push(200, "var_2");
-    //prolog end
+    //prolog end-----------
 
     print_stack();
 
-    //다음 호출 될 매개변수 저장
+    //save next func's parameter
     push(77, "arg1");
 
     func3(77);
-    //epillog start
-    SP = FP;
+    //epillog start----------
     epillog();
     remove_parameter(1);
-    //epillog end
+    //epillog end----------
 
     print_stack();
 }
@@ -148,31 +147,30 @@ void func3(int arg1)
 {
     int var_3 = 300;
     int var_4 = 400;
-    //prolog start
+    //prolog start---------
     prolog("func3", 2);
     //local value push
     SP -= 2;
     push(300, "var_3");
     push(400, "var_4");
-    //prolog end
+    //prolog end------------
     print_stack();
 }
 
 int main()
 {
-    //0. push parameter
+    //save next's func parameter
     push(3, "arg3");
     push(2, "arg2");
     push(1, "arg1");
 
     func1(1, 2, 3);
 
-    //epillog start
-    SP = FP;
+    //epillog start-----------
     epillog();
     //remove Parameter
     remove_parameter(3);
-    //epillog end
+    //epillog end----------
     print_stack();
     return 0;
 }
